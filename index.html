@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    <title>CutTrack 70 | יעד 70 ק"ג עד 10.12</title>
+    <!-- Dynamic Manifest & App Icon for Home Screen Installation -->
+    <link rel="manifest" id="pwa-manifest">
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #263449;
+            --bg-input: #0b1120;
+            --border-color: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-emerald: #10b981;
+            --accent-emerald-dark: #059669;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-blue: #38bdf8;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 92px;
+            overflow-x: hidden;
+            line-height: 1.45;
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(180deg, #162238 0%, #0f172a 100%);
+            padding: 16px 16px 14px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-badge {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .brand h1 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .countdown-pill {
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: var(--accent-amber);
+            padding: 5px 11px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .weight-strip {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+        }
+
+        .weight-numbers {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 0.82rem;
+            margin-bottom: 6px;
+        }
+
+        .weight-numbers span strong {
+            font-size: 0.98rem;
+            color: var(--text-primary);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-input);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-emerald), #34d399);
+            border-radius: 999px;
+            transition: width 0.35s ease;
+        }
+
+        /* Container & Cards */
+        .container {
+            max-width: 540px;
+            margin: 0 auto;
+            padding: 14px 14px 20px;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.22);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--text-primary);
+        }
+
+        /* Date Navigator */
+        .date-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 8px 12px;
+            margin-bottom: 14px;
+        }
+
+        .date-nav button {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-sm);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .date-label {
+            text-align: center;
+        }
+
+        .date-label .day-title {
+            font-weight: 700;
+            font-size: 0.98rem;
+        }
+
+        .date-label .day-sub {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        /* Macro Bars */
+        .macro-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .macro-box {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px;
+        }
+
+        .macro-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
+        }
+
+        .macro-name {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .macro-val {
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .macro-sub {
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .overage-banner {
+            background: rgba(239, 68, 68, 0.14);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .overage-banner p {
+            font-size: 0.82rem;
+            color: #fca5a5;
+            font-weight: 600;
+        }
+
+        /* Fasting Window */
+        .fasting-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px;
+        }
+
+        .fasting-status {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+        }
+
+        .fasting-timer {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .window-inputs {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .window-inputs input[type="time"] {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 6px;
+            padding: 4px 6px;
+            font-size: 0.82rem;
+        }
+
+        /* Steps */
+        .steps-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        input[type="number"], input[type="text"], select {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            padding: 11px 12px;
+            font-size: 0.95rem;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent-emerald);
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 11px 14px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: transform 0.1s, opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-emerald {
+            background: var(--accent-emerald);
+            color: #052e16;
+        }
+
+        .btn-amber {
+            background: var(--accent-amber);
+            color: #271502;
+        }
+
+        .btn-outline {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-danger-ghost {
+            background: rgba(239, 68, 68, 0.12);
+            color: #f87171;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn-sm {
+            padding: 7px 11px;
+            font-size: 0.82rem;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* Meal Inputs & Presets */
+        .meal-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .meal-form-grid .full-span {
+            grid-column: span 2;
+        }
+
+        .preset-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 10px;
+        }
+
+        .preset-chip {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 10px;
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            text-align: right;
+            cursor: pointer;
+            flex: 1 1 calc(50% - 7px);
+            min-width: 145px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .preset-chip:active {
+            border-color: var(--accent-emerald);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .preset-chip .p-title {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .preset-chip .p-meta {
+            color: var(--accent-emerald);
+            font-size: 0.74rem;
+            font-weight: 600;
+        }
+
+        /* Habits Checklist */
+        .habit-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .habit-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.88rem;
+        }
+
+        .habit-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--accent-emerald);
+            cursor: pointer;
+        }
+
+        /* Logged Meals List */
+        .meal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .meal-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+        }
+
+        .meal-row-info .m-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .meal-row-info .m-stats {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        /* Workouts */
+        .workout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .workout-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .workout-card.done {
+            border-color: var(--accent-emerald);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .workout-card .w-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+
+        .workout-card .w-desc {
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+        }
+
+        .timer-display {
+            font-size: 2.3rem;
+            font-weight: 800;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            color: var(--accent-amber);
+            margin: 8px 0;
+        }
+
+        .timer-controls {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .lift-row {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .lift-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .lift-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 6px;
+        }
+
+        /* Weight & Analytics */
+        .star-rating {
+            display: flex;
+            gap: 6px;
+        }
+
+        .star-btn {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        .star-btn.active {
+            border-color: var(--accent-amber);
+            color: var(--accent-amber);
+            background: rgba(245, 158, 11, 0.12);
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .stat-box {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        .stat-box .s-val {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--accent-emerald);
+        }
+
+        .stat-box .s-lbl {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .chart-wrap {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.96);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+            z-index: 50;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 6px 16px;
+            border-radius: var(--radius-md);
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .nav-btn.active {
+            color: var(--accent-emerald);
+            background: rgba(16, 185, 129, 0.12);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 84px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: #10b981;
+            color: #052e16;
+            font-weight: 800;
+            font-size: 0.86rem;
+            padding: 10px 18px;
+            border-radius: 999px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s ease;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">נשמר בהצלחה</div>
+
+    <!-- Top Header -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="brand">
+                <h1>CutTrack 70</h1>
+                <span class="brand-badge">אפי | ללא לקטוז</span>
+            </div>
+            <div class="countdown-pill" id="countdown-pill">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span id="days-left-text">טוען...</span>
+            </div>
+        </div>
+
+        <div class="weight-strip">
+            <div class="weight-numbers">
+                <span>התחלה: <strong>74.0 ק"ג</strong></span>
+                <span>נוכחי: <strong id="header-current-weight" style="color: var(--accent-emerald);">74.0 ק"ג</strong></span>
+                <span>יעד 10.12: <strong style="color: var(--accent-amber);">70.0 ק"ג</strong></span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="header-weight-bar" style="width: 0%;"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ==================== TAB 1: DAILY COCKPIT ==================== -->
+        <section id="tab-daily" class="tab-panel active">
+            
+            <!-- Date Selector -->
+            <div class="date-nav">
+                <button id="prev-day-btn" aria-label="יום קודם">→</button>
+                <div class="date-label">
+                    <div class="day-title" id="selected-date-title">היום</div>
+                    <div class="day-sub" id="selected-date-sub"></div>
+                </div>
+                <button id="next-day-btn" aria-label="יום הבא">←</button>
+            </div>
+
+            <!-- Calories & Protein Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        מאזן יומי (קלוריות וחלבון)
+                    </div>
+                    <span id="target-badge" style="font-size: 0.76rem; color: var(--text-secondary); font-weight: 700;">יעד: 1,800 קק"ל</span>
+                </div>
+
+                <div class="macro-grid">
+                    <!-- Calories -->
+                    <div class="macro-box">
+                        <div class="macro-top">
+                            <span class="macro-name">קלוריות</span>
+                            <span class="macro-val" id="cal-consumed">0</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="cal-bar" style="width: 0%;"></div>
+                        </div>
+                        <div class="macro-sub" id="cal-remaining">נותרו 1,800 קק"ל</div>
+                    </div>
+
+                    <!-- Protein -->
+                    <div class="macro-box">
+                        <div class="macro-top">
+                            <span class="macro-name">חלבון (יעד 160ג')</span>
+                            <span class="macro-val" id="prot-consumed" style="color: var(--accent-emerald);">0ג'</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="prot-bar" style="width: 0%;"></div>
+                        </div>
+                        <div class="macro-sub" id="prot-remaining">נותרו 160 גרם</div>
+                    </div>
+                </div>
+
+                <!-- Damage Control / Calorie Banking Banner -->
+                <div id="overage-banner" class="overage-banner" style="display: none;">
+                    <p id="overage-text">חריגה של 0 קק"ל מהיעד היומי</p>
+                    <button class="btn btn-amber btn-sm" id="balance-overage-btn">איזון חריגה (3 ימים)</button>
+                </div>
+            </div>
+
+            <!-- Fasting & Eating Window Timer -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        חלון אכילה וצום לילה
+                    </div>
+                    <div class="window-inputs">
+                        <input type="time" id="win-start" value="09:30">
+                        <span>עד</span>
+                        <input type="time" id="win-end" value="20:00">
+                    </div>
+                </div>
+                <div class="fasting-box">
+                    <div>
+                        <div class="fasting-status" id="fasting-status">חלון אכילה פתוח</div>
+                        <div class="fasting-timer" id="fasting-timer">מחשב זמן...</div>
+                    </div>
+                    <div id="fasting-badge" class="brand-badge">13.5 ש' צום</div>
+                </div>
+            </div>
+
+            <!-- Google Fit Steps Tracker -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/></svg>
+                        צעדים יומיים (Google Fit)
+                    </div>
+                    <span id="steps-pct" style="font-size: 0.82rem; font-weight: 700; color: var(--accent-blue);">0 / 10,000</span>
+                </div>
+                <div class="steps-row">
+                    <input type="number" id="steps-input" placeholder="הזן צעדים מ-Google Fit..." inputmode="numeric">
+                    <button class="btn btn-outline" id="add-1k-steps-btn">+1,000</button>
+                    <button class="btn btn-emerald" id="save-steps-btn">עדכן</button>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="steps-bar" style="width: 0%; background: var(--accent-blue);"></div>
+                </div>
+            </div>
+
+            <!-- Quick Meal Logger -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                        הוספת ארוחה מהירה
+                    </div>
+                </div>
+
+                <div class="meal-form-grid">
+                    <input type="text" id="meal-name" class="full-span" placeholder="שם הארוחה (למשל: חזה עוף ואורז)">
+                    <input type="number" id="meal-cals" placeholder="קלוריות (קק''ל)" inputmode="numeric">
+                    <input type="number" id="meal-prot" placeholder="חלבון (גרם)" inputmode="numeric">
+                    <button class="btn btn-emerald btn-block full-span" id="add-meal-btn">+ הוסף ארוחה ליומן</button>
+                </div>
+
+                <!-- Preset Meals Bank -->
+                <div style="margin-top: 14px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-secondary);">בנק ארוחות קבועות (לחיצה להוספה):</span>
+                        <button class="btn btn-outline btn-sm" id="save-as-preset-btn" style="font-size: 0.74rem; padding: 4px 8px;">שמור שדות כקבוע</button>
+                    </div>
+                    <div class="preset-chips" id="preset-chips"></div>
+                </div>
+            </div>
+
+            <!-- Daily Sequencing & Habits -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        הרגלי סדר אכילה ושובע
+                    </div>
+                </div>
+                <div class="habit-list">
+                    <label class="habit-item">
+                        <input type="checkbox" id="habit-order">
+                        <span>ירקות וחלבון לפני הפחמימה (איזון סוכר)</span>
+                    </label>
+                    <label class="habit-item">
+                        <input type="checkbox" id="habit-slow">
+                        <span>אכילה איטית ומודעת (לפחות 15 דקות לארוחה)</span>
+                    </label>
+                    <label class="habit-item">
+                        <input type="checkbox" id="habit-sodium">
+                        <span>ארוחת ערב דלת נתרן (מניעת אגירת נוזלים)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Today's Logged Meals -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">ארוחות שנרשמו ביום זה</div>
+                    <span id="meals-count" style="font-size: 0.8rem; color: var(--text-secondary);">0 ארוחות</span>
+                </div>
+                <div class="meal-list" id="logged-meals-list">
+                    <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px;">עדיין לא הוזנו ארוחות ליום זה</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 2: WORKOUTS ==================== -->
+        <section id="tab-workouts" class="tab-panel">
+            
+            <!-- Weekly Split Tracker -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M3 10v4"/><path d="M21 10v4"/><path d="M6.5 4v16"/><path d="M17.5 4v16"/></svg>
+                        פיצול אימונים שבועי (יעד 4/4)
+                    </div>
+                    <span id="weekly-workout-count" class="brand-badge">0/4 הושלמו</span>
+                </div>
+
+                <div class="workout-grid" id="workout-split-grid">
+                    <!-- Populated via JS -->
+                </div>
+
+                <!-- Home Push Alternative -->
+                <div class="workout-card" id="home-push-card" style="border-style: dashed;">
+                    <div class="w-head">
+                        <span>⚡ אימון דחיפה ביתי (חלופה לימים עמוסים)</span>
+                        <input type="checkbox" id="home-push-check" style="width: 20px; height: 20px; accent-color: var(--accent-amber);">
+                    </div>
+                    <div class="w-desc">שכיבות סמיכה בשיפוע/רגילות, מקבילים/פשיטת מרפקים, הרחקות כתפיים – 25 דקות עצימות גבוהה.</div>
+                </div>
+            </div>
+
+            <!-- Built-in Rest Timer -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        טיימר מנוחה בין סטים
+                    </div>
+                    <span style="font-size: 0.76rem; color: var(--text-secondary);">כולל צליל בסיום</span>
+                </div>
+                <div class="timer-display" id="rest-timer-display">01:30</div>
+                <div class="timer-controls">
+                    <button class="btn btn-outline" onclick="startRestTimer(60)">60 שנ'</button>
+                    <button class="btn btn-outline" onclick="startRestTimer(90)">90 שנ'</button>
+                    <button class="btn btn-outline" onclick="startRestTimer(120)">120 שנ'</button>
+                    <button class="btn btn-danger-ghost" style="height: 100%; font-size: 0.88rem;" onclick="stopRestTimer()">איפוס</button>
+                </div>
+            </div>
+
+            <!-- Progressive Overload Logger -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">מעקב כוח (שימור שריר בחיטוב)</div>
+                </div>
+                <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 10px;">
+                    שמירה על משקלי העבודה בתרגילי הבסיס מוכיחה שאתה שורף שומן ולא מאבד שריר.
+                </p>
+                <div id="lifts-container"></div>
+            </div>
+        </section>
+
+        <!-- ==================== TAB 3: WEIGHT & ANALYTICS ==================== -->
+        <section id="tab-weight" class="tab-panel">
+            
+            <!-- Morning Weigh-in Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M12 3v18"/><path d="M5 10l7-7 7 7"/></svg>
+                        שקילת בוקר והתאוששות
+                    </div>
+                    <span id="weigh-date-badge" style="font-size: 0.78rem; color: var(--text-secondary);">היום</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                    <div>
+                        <label style="font-size: 0.78rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">משקל בוקר (ק"ג)</label>
+                        <input type="number" id="weight-input" step="0.1" placeholder="73.5" inputmode="decimal">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.78rem; color: var(--text-secondary); display: block; margin-bottom: 4px;">איכות שינה (1-5)</label>
+                        <div class="star-rating" id="sleep-stars">
+                            <button type="button" class="star-btn" data-val="1">1</button>
+                            <button type="button" class="star-btn" data-val="2">2</button>
+                            <button type="button" class="star-btn" data-val="3">3</button>
+                            <button type="button" class="star-btn" data-val="4">4</button>
+                            <button type="button" class="star-btn" data-val="5">5</button>
+                        </div>
+                    </div>
+                </div>
+
+                <label class="habit-item" style="margin-bottom: 12px;">
+                    <input type="checkbox" id="high-sodium-flag">
+                    <span>אכלתי מלוח/בחוץ אתמול בערב (תנודת נוזלים צפויה)</span>
+                </label>
+
+                <button class="btn btn-emerald btn-block" id="save-weight-btn">שמור שקילה ונתונים</button>
+
+                <div id="water-warning-box" style="display: none; margin-top: 10px; padding: 10px; border-radius: 8px; background: rgba(245, 158, 11, 0.14); border: 1px solid rgba(245, 158, 11, 0.4); font-size: 0.82rem; color: #fcd34d;">
+                    💧 <strong>תנודת נוזלים צפויה:</strong> עקב שינה חלשה או נתרן גבוה אמש, ייתכן שהמשקל מציג עלייה זמנית בנוזלים. אל תקצץ אוכל – המשך כרגיל!
+                </div>
+            </div>
+
+            <!-- Analytics & Trajectory -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">מגמת ירידה ותחזית ל-10.12</div>
+                </div>
+
+                <div class="stats-summary">
+                    <div class="stat-box">
+                        <div class="s-val" id="stat-moving-avg">74.0</div>
+                        <div class="s-lbl">ממוצע נע (7 ימים)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="s-val" id="stat-to-go" style="color: var(--accent-amber);">4.0 ק"ג</div>
+                        <div class="s-lbl">נותר ליעד 70.0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="s-val" id="stat-req-pace" style="color: var(--accent-blue);">-1.0 ק"ג</div>
+                        <div class="s-lbl">קצב נדרש לשבוע</div>
+                    </div>
+                </div>
+
+                <!-- Custom SVG Chart -->
+                <div class="chart-wrap">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 6px;">
+                        <span><span style="color: #10b981;">●</span> שקילות בפועל</span>
+                        <span><span style="color: #f59e0b;">--</span> קו יעד ל-70.0 ק"ג</span>
+                    </div>
+                    <svg id="weight-chart" viewBox="0 0 320 150" style="width: 100%; height: 150px; overflow: visible;"></svg>
+                </div>
+
+                <!-- Recent Weigh-ins List -->
+                <div id="weigh-history-list" style="margin-top: 12px; display: flex; flex-direction: column; gap: 6px;"></div>
+            </div>
+
+            <!-- Backup & Data Management -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">גיבוי ושחזור נתונים</div>
+                </div>
+                <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 10px;">
+                    כל הנתונים נשמרים אוטומטית בזיכרון המכשיר. מומלץ לייצא גיבוי אחת לשבוע.
+                </p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button class="btn btn-outline" id="export-json-btn">ייצוא גיבוי (JSON)</button>
+                    <label class="btn btn-outline" style="cursor: pointer;">
+                        ייבוא גיבוי
+                        <input type="file" id="import-json-input" accept=".json" style="display: none;">
+                    </label>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-target="tab-daily">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>מעקב יומי</span>
+        </button>
+        <button class="nav-btn" data-target="tab-workouts">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><path d="M3 10v4"/><path d="M21 10v4"/><path d="M6.5 4v16"/><path d="M17.5 4v16"/></svg>
+            <span>אימונים</span>
+        </button>
+        <button class="nav-btn" data-target="tab-weight">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <span>שקילות ונתונים</span>
+        </button>
+    </nav>
+
+    <script>
+        // ==================== PWA MANIFEST & ICON INJECTION ====================
+        (function setupPWA() {
+            const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#0f172a"/><circle cx="256" cy="256" r="180" fill="none" stroke="#10b981" stroke-width="32"/><text x="256" y="285" font-family="sans-serif" font-size="130" font-weight="bold" fill="#f8fafc" text-anchor="middle">70</text></svg>`;
+            const iconUrl = 'data:image/svg+xml;base64,' + btoa(svgIcon);
+            const manifest = {
+                name: "CutTrack 70 - אפי",
+                short_name: "CutTrack 70",
+                start_url: ".",
+                display: "standalone",
+                background_color: "#0f172a",
+                theme_color: "#0f172a",
+                icons: [{ src: iconUrl, sizes: "512x512", type: "image/svg+xml" }]
+            };
+            const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+            document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(blob));
+        })();
+
+        // ==================== STATE MANAGEMENT ====================
+        const STORAGE_KEY = 'cuttrack70_effi_v1';
+        const START_WEIGHT = 74.0;
+        const GOAL_WEIGHT = 70.0;
+        const GOAL_DATE_STR = '2026-12-10';
+        const BASE_CALORIES = 1800;
+        const BASE_PROTEIN = 160;
+        const STEPS_GOAL = 10000;
+
+        const DEFAULT_PRESETS = [
+            { id: 'p1', name: 'קפה שחור נקי', cals: 5, prot: 0 },
+            { id: 'p2', name: 'בוקר: 3 ביצים + ירקות + 2 מחמצת', cals: 430, prot: 26 },
+            { id: 'p3', name: 'בוקר: 2 יווני 2% דל לקטוז + שיבולת שועל', cals: 380, prot: 36 },
+            { id: 'p4', name: 'צהריים: 200ג\' חזה עוף + אורז + סלט', cals: 520, prot: 50 },
+            { id: 'p5', name: 'לפני אימון: סקופ מבודד + בננה', cals: 230, prot: 26 },
+            { id: 'p6', name: 'ערב: 200ג\' סינטה/דג + ירקות + תפו"א', cals: 460, prot: 46 }
+        ];
+
+        const DEFAULT_LIFTS = [
+            { id: 'l1', name: 'לחיצת חזה (מוט / דאמבלים)', weight: 70, reps: 8 },
+            { id: 'l2', name: 'סקוואט / לחיצת רגליים', weight: 100, reps: 10 },
+            { id: 'l3', name: 'מתח / פולי עליון', weight: 65, reps: 10 },
+            { id: 'l4', name: 'חתירה / דדליפט רומני', weight: 75, reps: 10 }
+        ];
+
+        const WORKOUT_SPLITS = [
+            { id: 'upperA', title: 'Upper A (פלג גוף עליון)', desc: 'חזה, גב, כתפיים וידיים – כבד' },
+            { id: 'lowerA', title: 'Lower A (פלג גוף תחתון)', desc: 'ארבע ראשי, המסטרינג, תאומים ובטן' },
+            { id: 'upperB', title: 'Upper B (פלג גוף עליון)', desc: 'שיפוע עליון, חתירות, כתף צדדית' },
+            { id: 'lowerB', title: 'Lower B (פלג גוף תחתון)', desc: 'דגש שרשרת אחורית, לאנג\'ים ובטן' }
+        ];
+
+        function getTodayStr() {
+            const d = new Date();
+            const offset = d.getTimezoneOffset();
+            const local = new Date(d.getTime() - (offset * 60 * 1000));
+            return local.toISOString().split('T')[0];
+        }
+
+        function addDaysStr(dateStr, days) {
+            const d = new Date(dateStr + 'T12:00:00');
+            d.setDate(d.getDate() + days);
+            return d.toISOString().split('T')[0];
+        }
+
+        let state = {
+            winStart: '09:30',
+            winEnd: '20:00',
+            presets: [...DEFAULT_PRESETS],
+            lifts: [...DEFAULT_LIFTS],
+            days: {}, // { 'YYYY-MM-DD': { meals: [], steps: 0, habits: {order, slow, sodium}, calAdjustment: 0 } }
+            weighIns: [
+                { date: '2026-11-13', weight: 74.0, sleep: 4, highSodium: false }
+            ],
+            weeklyWorkouts: {} // { 'YYYY-Www': { upperA: bool, lowerA: bool, upperB: bool, lowerB: bool, homePush: bool } }
+        };
+
+        let selectedDate = getTodayStr();
+        let selectedSleep = 4;
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    state = { ...state, ...parsed };
+                }
+            } catch (e) {
+                console.error('Error loading state:', e);
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.error('Error saving state:', e);
+            }
+        }
+
+        function ensureDay(dateStr) {
+            if (!state.days[dateStr]) {
+                state.days[dateStr] = {
+                    meals: [],
+                    steps: 0,
+                    habits: { order: false, slow: false, sodium: false },
+                    calAdjustment: 0
+                };
+            }
+            return state.days[dateStr];
+        }
+
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 2200);
+        }
+
+        // ==================== HEADER & COUNTDOWN ====================
+        function updateHeader() {
+            const today = new Date(getTodayStr() + 'T00:00:00');
+            const goal = new Date(GOAL_DATE_STR + 'T00:00:00');
+            const diffDays = Math.max(0, Math.ceil((goal - today) / (1000 * 60 * 60 * 24)));
+            document.getElementById('days-left-text').textContent = `${diffDays} ימים ליעד (10.12)`;
+
+            // Latest weight
+            const sortedWeights = [...state.weighIns].sort((a, b) => a.date.localeCompare(b.date));
+            const currentW = sortedWeights.length ? sortedWeights[sortedWeights.length - 1].weight : START_WEIGHT;
+            document.getElementById('header-current-weight').textContent = `${currentW.toFixed(1)} ק"ג`;
+
+            const totalToLose = START_WEIGHT - GOAL_WEIGHT;
+            const lostSoFar = Math.max(0, START_WEIGHT - currentW);
+            const pct = Math.min(100, Math.max(0, (lostSoFar / totalToLose) * 100));
+            document.getElementById('header-weight-bar').style.width = `${pct}%`;
+        }
+
+        // ==================== FASTING WINDOW TIMER ====================
+        function updateFastingTimer() {
+            const now = new Date();
+            const [sh, sm] = state.winStart.split(':').map(Number);
+            const [eh, em] = state.winEnd.split(':').map(Number);
+
+            const startMins = sh * 60 + sm;
+            const endMins = eh * 60 + em;
+            const nowMins = now.getHours() * 60 + now.getMinutes();
+
+            const statusEl = document.getElementById('fasting-status');
+            const timerEl = document.getElementById('fasting-timer');
+            const badgeEl = document.getElementById('fasting-badge');
+
+            const fastDuration = ((24 * 60 - endMins) + startMins) / 60;
+            badgeEl.textContent = `${fastDuration.toFixed(1)} ש' צום`;
+
+            if (nowMins >= startMins && nowMins < endMins) {
+                const rem = endMins - nowMins;
+                const h = Math.floor(rem / 60);
+                const m = rem % 60;
+                statusEl.textContent = '🟢 חלון אכילה פתוח';
+                statusEl.style.color = 'var(--accent-emerald)';
+                timerEl.textContent = `נותרו ${h} שעות ו-${m} דקות לסגירת המטבח (${state.winEnd})`;
+            } else {
+                let rem = nowMins < startMins ? (startMins - nowMins) : ((24 * 60 - nowMins) + startMins);
+                const h = Math.floor(rem / 60);
+                const m = rem % 60;
+                statusEl.textContent = '🌙 בצום לילה פעיל';
+                statusEl.style.color = 'var(--accent-amber)';
+                timerEl.textContent = `שבירת צום בעוד ${h} שעות ו-${m} דקות (${state.winStart})`;
+            }
+        }
+
+        // ==================== DAILY COCKPIT RENDER ====================
+        function renderDaily() {
+            const dayData = ensureDay(selectedDate);
+            const todayStr = getTodayStr();
+
+            // Date label
+            const dateObj = new Date(selectedDate + 'T12:00:00');
+            const daysHe = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+            let title = `יום ${daysHe[dateObj.getDay()]}`;
+            if (selectedDate === todayStr) title = `היום (${title})`;
+            else if (selectedDate === addDaysStr(todayStr, -1)) title = `אתמול (${title})`;
+            else if (selectedDate === addDaysStr(todayStr, 1)) title = `מחר (${title})`;
+
+            document.getElementById('selected-date-title').textContent = title;
+            document.getElementById('selected-date-sub').textContent = selectedDate.split('-').reverse().join('.');
+            document.getElementById('weigh-date-badge').textContent = selectedDate.split('-').reverse().join('.');
+
+            // Target & Macros
+            const targetCals = Math.max(1300, BASE_CALORIES + (dayData.calAdjustment || 0));
+            document.getElementById('target-badge').textContent = dayData.calAdjustment
+                ? `יעד מותאם: ${targetCals} קק"ל (${dayData.calAdjustment})`
+                : `יעד: ${targetCals} קק"ל`;
+
+            const totalCals = dayData.meals.reduce((s, m) => s + Number(m.cals || 0), 0);
+            const totalProt = dayData.meals.reduce((s, m) => s + Number(m.prot || 0), 0);
+
+            document.getElementById('cal-consumed').textContent = totalCals;
+            document.getElementById('prot-consumed').textContent = `${totalProt}ג'`;
+
+            const calRem = targetCals - totalCals;
+            const protRem = Math.max(0, BASE_PROTEIN - totalProt);
+
+            const calBar = document.getElementById('cal-bar');
+            calBar.style.width = `${Math.min(100, (totalCals / targetCals) * 100)}%`;
+            calBar.style.background = calRem < 0 ? 'var(--accent-red)' : 'linear-gradient(90deg, var(--accent-emerald), #34d399)';
+
+            document.getElementById('cal-remaining').textContent = calRem >= 0
+                ? `נותרו ${calRem} קק"ל`
+                : `חריגה של ${Math.abs(calRem)} קק"ל`;
+
+            document.getElementById('prot-bar').style.width = `${Math.min(100, (totalProt / BASE_PROTEIN) * 100)}%`;
+            document.getElementById('prot-remaining').textContent = protRem > 0
+                ? `נותרו ${protRem} גרם`
+                : `יעד חלבון הושלם! 💪`;
+
+            // Overage Banner
+            const overageBanner = document.getElementById('overage-banner');
+            if (calRem < -50) {
+                overageBanner.style.display = 'flex';
+                document.getElementById('overage-text').textContent = `חריגה של ${Math.abs(calRem)} קק"ל. לפרוס על 3 הימים הבאים?`;
+            } else {
+                overageBanner.style.display = 'none';
+            }
+
+            // Steps
+            const steps = Number(dayData.steps || 0);
+            document.getElementById('steps-input').value = steps || '';
+            document.getElementById('steps-pct').textContent = `${steps.toLocaleString()} / ${STEPS_GOAL.toLocaleString()}`;
+            document.getElementById('steps-bar').style.width = `${Math.min(100, (steps / STEPS_GOAL) * 100)}%`;
+
+            // Habits
+            document.getElementById('habit-order').checked = !!dayData.habits.order;
+            document.getElementById('habit-slow').checked = !!dayData.habits.slow;
+            document.getElementById('habit-sodium').checked = !!dayData.habits.sodium;
+
+            // Logged Meals List
+            const listEl = document.getElementById('logged-meals-list');
+            document.getElementById('meals-count').textContent = `${dayData.meals.length} ארוחות`;
+
+            if (!dayData.meals.length) {
+                listEl.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px;">עדיין לא הוזנו ארוחות ליום זה</div>`;
+            } else {
+                listEl.innerHTML = dayData.meals.map((m, idx) => `
+                    <div class="meal-row">
+                        <div class="meal-row-info">
+                            <div class="m-name">${escapeHtml(m.name)}</div>
+                            <div class="m-stats">${m.cals} קק"ל • <strong style="color: var(--accent-emerald);">${m.prot}ג' חלבון</strong> ${m.time ? '• ' + m.time : ''}</div>
+                        </div>
+                        <button class="btn btn-danger-ghost" onclick="deleteMeal(${idx})">מחק</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function renderPresets() {
+            const container = document.getElementById('preset-chips');
+            container.innerHTML = state.presets.map(p => `
+                <button type="button" class="preset-chip" onclick="addPresetMeal('${p.id}')">
+                    <span class="p-title">${escapeHtml(p.name)}</span>
+                    <span class="p-meta">${p.cals} קק"ל | ${p.prot}ג' חלבון</span>
+                </button>
+            `).join('');
+        }
+
+        function addMeal(name, cals, prot) {
+            if (!name.trim() && !cals) {
+                showToast('הזן שם ארוחה או קלוריות');
+                return;
+            }
+            const dayData = ensureDay(selectedDate);
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            dayData.meals.push({
+                name: name.trim() || 'ארוחה מהירה',
+                cals: Math.max(0, Number(cals) || 0),
+                prot: Math.max(0, Number(prot) || 0),
+                time: timeStr
+            });
+            saveState();
+            renderDaily();
+            showToast('הארוחה נוספה ליומן ✓');
+        }
+
+        window.addPresetMeal = function(presetId) {
+            const p = state.presets.find(x => x.id === presetId);
+            if (p) addMeal(p.name, p.cals, p.prot);
+        };
+
+        window.deleteMeal = function(idx) {
+            const dayData = ensureDay(selectedDate);
+            dayData.meals.splice(idx, 1);
+            saveState();
+            renderDaily();
+            showToast('הארוחה הוסרה');
+        };
+
+        // ==================== WORKOUTS & TIMER ====================
+        function getWeekKey(dateStr) {
+            const d = new Date(dateStr + 'T12:00:00');
+            const day = d.getDay();
+            const diff = d.getDate() - day;
+            const sunday = new Date(d.setDate(diff));
+            return sunday.toISOString().split('T')[0];
+        }
+
+        function renderWorkouts() {
+            const wkKey = getWeekKey(selectedDate);
+            if (!state.weeklyWorkouts[wkKey]) {
+                state.weeklyWorkouts[wkKey] = { upperA: false, lowerA: false, upperB: false, lowerB: false, homePush: false };
+            }
+            const wkData = state.weeklyWorkouts[wkKey];
+
+            const grid = document.getElementById('workout-split-grid');
+            grid.innerHTML = WORKOUT_SPLITS.map(w => {
+                const isDone = !!wkData[w.id];
+                return `
+                    <div class="workout-card ${isDone ? 'done' : ''}" onclick="toggleWorkout('${w.id}')">
+                        <div class="w-head">
+                            <span>${w.title}</span>
+                            <span>${isDone ? '✅' : '⬜'}</span>
+                        </div>
+                        <div class="w-desc">${w.desc}</div>
+                    </div>
+                `;
+            }).join('');
+
+            const doneCount = WORKOUT_SPLITS.filter(w => wkData[w.id]).length + (wkData.homePush ? 1 : 0);
+            document.getElementById('weekly-workout-count').textContent = `${Math.min(4, doneCount)}/4 הושלמו`;
+
+            const homeCheck = document.getElementById('home-push-check');
+            homeCheck.checked = !!wkData.homePush;
+            document.getElementById('home-push-card').classList.toggle('done', !!wkData.homePush);
+
+            // Lifts
+            const liftsContainer = document.getElementById('lifts-container');
+            liftsContainer.innerHTML = state.lifts.map((l, idx) => `
+                <div class="lift-row">
+                    <div class="lift-top">
+                        <strong style="font-size: 0.88rem;">${escapeHtml(l.name)}</strong>
+                        <span style="font-size: 0.78rem; color: var(--accent-emerald); font-weight: 700;">שיא נוכחי: ${l.weight} ק"ג × ${l.reps}</span>
+                    </div>
+                    <div class="lift-inputs">
+                        <input type="number" id="lift-w-${idx}" value="${l.weight}" step="0.5" placeholder="ק''ג">
+                        <input type="number" id="lift-r-${idx}" value="${l.reps}" placeholder="חזרות">
+                        <button class="btn btn-emerald btn-sm" onclick="updateLift(${idx})">עדכן</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.toggleWorkout = function(id) {
+            const wkKey = getWeekKey(selectedDate);
+            state.weeklyWorkouts[wkKey][id] = !state.weeklyWorkouts[wkKey][id];
+            saveState();
+            renderWorkouts();
+            showToast('סטטוס אימון עודכן');
+        };
+
+        window.updateLift = function(idx) {
+            const w = Number(document.getElementById(`lift-w-${idx}`).value);
+            const r = Number(document.getElementById(`lift-r-${idx}`).value);
+            if (w > 0 && r > 0) {
+                state.lifts[idx].weight = w;
+                state.lifts[idx].reps = r;
+                saveState();
+                renderWorkouts();
+                showToast('משקל עבודה עודכן 💪');
+            }
+        };
+
+        // Rest Timer with Web Audio Beep
+        let timerInterval = null;
+        let timerSecondsLeft = 90;
+
+        function playBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                gain.gain.setValueAtTime(0.25, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.35);
+            } catch (e) {}
+        }
+
+        function formatSeconds(sec) {
+            const m = Math.floor(sec / 60);
+            const s = sec % 60;
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        window.startRestTimer = function(seconds) {
+            clearInterval(timerInterval);
+            timerSecondsLeft = seconds;
+            document.getElementById('rest-timer-display').textContent = formatSeconds(timerSecondsLeft);
+            document.getElementById('rest-timer-display').style.color = 'var(--accent-amber)';
+
+            timerInterval = setInterval(() => {
+                timerSecondsLeft--;
+                if (timerSecondsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('rest-timer-display').textContent = '00:00';
+                    document.getElementById('rest-timer-display').style.color = 'var(--accent-emerald)';
+                    playBeep();
+                    showToast('המנוחה הסתיימה – לסט הבא!');
+                } else {
+                    document.getElementById('rest-timer-display').textContent = formatSeconds(timerSecondsLeft);
+                }
+            }, 1000);
+        };
+
+        window.stopRestTimer = function() {
+            clearInterval(timerInterval);
+            timerSecondsLeft = 90;
+            document.getElementById('rest-timer-display').textContent = '01:30';
+            document.getElementById('rest-timer-display').style.color = 'var(--accent-amber)';
+        };
+
+        // ==================== WEIGHT & ANALYTICS ====================
+        function renderWeightAnalytics() {
+            const sorted = [...state.weighIns].sort((a, b) => a.date.localeCompare(b.date));
+            const existing = sorted.find(w => w.date === selectedDate);
+            if (existing) {
+                document.getElementById('weight-input').value = existing.weight;
+                selectedSleep = existing.sleep || 4;
+                document.getElementById('high-sodium-flag').checked = !!existing.highSodium;
+            } else {
+                document.getElementById('weight-input').value = '';
+                document.getElementById('high-sodium-flag').checked = false;
+            }
+            updateSleepStarsUI();
+
+            // 7-day moving average
+            const last7 = sorted.slice(-7);
+            const avg7 = last7.length
+                ? last7.reduce((s, x) => s + x.weight, 0) / last7.length
+                : START_WEIGHT;
+
+            document.getElementById('stat-moving-avg').textContent = `${avg7.toFixed(1)} ק"ג`;
+
+            const toGo = Math.max(0, avg7 - GOAL_WEIGHT);
+            document.getElementById('stat-to-go').textContent = `${toGo.toFixed(1)} ק"ג`;
+
+            const today = new Date(getTodayStr() + 'T00:00:00');
+            const goal = new Date(GOAL_DATE_STR + 'T00:00:00');
+            const weeksLeft = Math.max(0.5, (goal - today) / (1000 * 60 * 60 * 24 * 7));
+            const reqPace = toGo / weeksLeft;
+            document.getElementById('stat-req-pace').textContent = `-${reqPace.toFixed(2)} ק"ג`;
+
+            // Render history list
+            const histEl = document.getElementById('weigh-history-list');
+            histEl.innerHTML = [...sorted].reverse().slice(0, 7).map(w => `
+                <div class="meal-row" style="padding: 8px 12px;">
+                    <span style="font-size: 0.84rem; color: var(--text-secondary);">${w.date.split('-').reverse().join('.')}</span>
+                    <span style="font-weight: 800; font-size: 0.95rem;">${w.weight.toFixed(1)} ק"ג ${w.highSodium ? '💧' : ''}</span>
+                    <span style="font-size: 0.78rem; color: var(--accent-amber);">שינה: ${w.sleep}/5</span>
+                </div>
+            `).join('');
+
+            renderWeightChart(sorted);
+        }
+
+        function renderWeightChart(sorted) {
+            const svg = document.getElementById('weight-chart');
+            if (!sorted.length) {
+                svg.innerHTML = '';
+                return;
+            }
+
+            const width = 320;
+            const height = 150;
+            const padX = 24;
+            const padY = 18;
+
+            const minW = Math.min(GOAL_WEIGHT - 0.5, ...sorted.map(d => d.weight)) - 0.3;
+            const maxW = Math.max(START_WEIGHT + 0.5, ...sorted.map(d => d.weight)) + 0.3;
+
+            const getY = (w) => {
+                const ratio = (w - minW) / (maxW - minW);
+                return height - padY - ratio * (height - padY * 2);
+            };
+
+            const getX = (idx, total) => {
+                if (total <= 1) return padX;
+                return padX + (idx / (total - 1)) * (width - padX * 2);
+            };
+
+            // Target line from START_WEIGHT to GOAL_WEIGHT
+            const yStart = getY(START_WEIGHT);
+            const yGoal = getY(GOAL_WEIGHT);
+
+            let svgContent = `
+                <line x1="${padX}" y1="${yGoal}" x2="${width - padX}" y2="${yGoal}" stroke="#334155" stroke-dasharray="3,3" stroke-width="1"/>
+                <text x="${width - padX}" y="${yGoal - 4}" fill="#94a3b8" font-size="9" text-anchor="end">יעד 70.0</text>
+                <line x1="${padX}" y1="${yStart}" x2="${width - padX}" y2="${yGoal}" stroke="#f59e0b" stroke-dasharray="4,4" stroke-width="1.5" opacity="0.7"/>
+            `;
+
+            if (sorted.length > 1) {
+                const points = sorted.map((d, i) => `${getX(i, sorted.length)},${getY(d.weight)}`).join(' ');
+                svgContent += `<polyline fill="none" stroke="#10b981" stroke-width="2.5" points="${points}" />`;
+            }
+
+            sorted.forEach((d, i) => {
+                const cx = getX(i, sorted.length);
+                const cy = getY(d.weight);
+                svgContent += `
+                    <circle cx="${cx}" cy="${cy}" r="4" fill="#10b981" stroke="#0f172a" stroke-width="1.5"/>
+                    <text x="${cx}" y="${cy - 8}" fill="#f8fafc" font-size="9" font-weight="bold" text-anchor="middle">${d.weight.toFixed(1)}</text>
+                `;
+            });
+
+            svg.innerHTML = svgContent;
+        }
+
+        function updateSleepStarsUI() {
+            document.querySelectorAll('#sleep-stars .star-btn').forEach(btn => {
+                btn.classList.toggle('active', Number(btn.dataset.val) <= selectedSleep);
+            });
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        }
+
+        // ==================== EVENT LISTENERS ====================
+        function initEvents() {
+            // Navigation Tabs
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.target).classList.add('active');
+                });
+            });
+
+            // Date Nav
+            document.getElementById('prev-day-btn').addEventListener('click', () => {
+                selectedDate = addDaysStr(selectedDate, -1);
+                renderDaily();
+                renderWorkouts();
+                renderWeightAnalytics();
+            });
+
+            document.getElementById('next-day-btn').addEventListener('click', () => {
+                selectedDate = addDaysStr(selectedDate, 1);
+                renderDaily();
+                renderWorkouts();
+                renderWeightAnalytics();
+            });
+
+            // Fasting Window Inputs
+            const winStartInput = document.getElementById('win-start');
+            const winEndInput = document.getElementById('win-end');
+            winStartInput.value = state.winStart;
+            winEndInput.value = state.winEnd;
+
+            winStartInput.addEventListener('change', (e) => {
+                state.winStart = e.target.value;
+                saveState();
+                updateFastingTimer();
+            });
+
+            winEndInput.addEventListener('change', (e) => {
+                state.winEnd = e.target.value;
+                saveState();
+                updateFastingTimer();
+            });
+
+            // Steps
+            document.getElementById('save-steps-btn').addEventListener('click', () => {
+                const val = Math.max(0, Number(document.getElementById('steps-input').value) || 0);
+                ensureDay(selectedDate).steps = val;
+                saveState();
+                renderDaily();
+                showToast('צעדים עודכנו ✓');
+            });
+
+            document.getElementById('add-1k-steps-btn').addEventListener('click', () => {
+                const dayData = ensureDay(selectedDate);
+                dayData.steps = (Number(dayData.steps) || 0) + 1000;
+                saveState();
+                renderDaily();
+                showToast('+1,000 צעדים נוספו');
+            });
+
+            // Add Meal
+            document.getElementById('add-meal-btn').addEventListener('click', () => {
+                const nameEl = document.getElementById('meal-name');
+                const calsEl = document.getElementById('meal-cals');
+                const protEl = document.getElementById('meal-prot');
+                addMeal(nameEl.value, calsEl.value, protEl.value);
+                nameEl.value = '';
+                calsEl.value = '';
+                protEl.value = '';
+            });
+
+            // Save Preset
+            document.getElementById('save-as-preset-btn').addEventListener('click', () => {
+                const name = document.getElementById('meal-name').value.trim();
+                const cals = Number(document.getElementById('meal-cals').value) || 0;
+                const prot = Number(document.getElementById('meal-prot').value) || 0;
+                if (!name || !cals) {
+                    showToast('מלא שם וקלוריות כדי לשמור כקבוע');
+                    return;
+                }
+                state.presets.push({ id: 'p' + Date.now(), name, cals, prot });
+                saveState();
+                renderPresets();
+                showToast('נשמר בבנק הארוחות הקבועות');
+            });
+
+            // Overage Balance (Calorie Banking)
+            document.getElementById('balance-overage-btn').addEventListener('click', () => {
+                const dayData = ensureDay(selectedDate);
+                const targetCals = BASE_CALORIES + (dayData.calAdjustment || 0);
+                const totalCals = dayData.meals.reduce((s, m) => s + Number(m.cals || 0), 0);
+                const surplus = totalCals - targetCals;
+                if (surplus <= 0) return;
+
+                const perDayCut = Math.round(surplus / 3);
+                for (let i = 1; i <= 3; i++) {
+                    const nextD = ensureDay(addDaysStr(selectedDate, i));
+                    nextD.calAdjustment = (nextD.calAdjustment || 0) - perDayCut;
+                }
+                dayData.calAdjustment = (dayData.calAdjustment || 0) + surplus;
+                saveState();
+                renderDaily();
+                showToast(`קוזזו ${perDayCut} קק"ל מכל אחד מ-3 הימים הבאים`);
+            });
+
+            // Habits Checkboxes
+            ['order', 'slow', 'sodium'].forEach(key => {
+                document.getElementById(`habit-${key}`).addEventListener('change', (e) => {
+                    ensureDay(selectedDate).habits[key] = e.target.checked;
+                    saveState();
+                });
+            });
+
+            // Home Push Workout
+            document.getElementById('home-push-check').addEventListener('change', (e) => {
+                const wkKey = getWeekKey(selectedDate);
+                state.weeklyWorkouts[wkKey].homePush = e.target.checked;
+                saveState();
+                renderWorkouts();
+            });
+
+            // Sleep Stars
+            document.querySelectorAll('#sleep-stars .star-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selectedSleep = Number(btn.dataset.val);
+                    updateSleepStarsUI();
+                });
+            });
+
+            // Save Weight
+            document.getElementById('save-weight-btn').addEventListener('click', () => {
+                const wVal = parseFloat(document.getElementById('weight-input').value);
+                if (!wVal || wVal < 40 || wVal > 150) {
+                    showToast('הזן משקל תקין בק"ג');
+                    return;
+                }
+                const highSodium = document.getElementById('high-sodium-flag').checked;
+                const existingIdx = state.weighIns.findIndex(x => x.date === selectedDate);
+                const entry = { date: selectedDate, weight: wVal, sleep: selectedSleep, highSodium };
+
+                if (existingIdx >= 0) state.weighIns[existingIdx] = entry;
+                else state.weighIns.push(entry);
+
+                saveState();
+                updateHeader();
+                renderWeightAnalytics();
+
+                const warnBox = document.getElementById('water-warning-box');
+                warnBox.style.display = (highSodium || selectedSleep <= 2) ? 'block' : 'none';
+                showToast('השקילה נשמרה ✓');
+            });
+
+            // Export JSON
+            document.getElementById('export-json-btn').addEventListener('click', () => {
+                const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `CutTrack70_Backup_${getTodayStr()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('קובץ גיבוי ירד למכשיר');
+            });
+
+            // Import JSON
+            document.getElementById('import-json-input').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        const imported = JSON.parse(ev.target.result);
+                        if (imported && imported.days) {
+                            state = imported;
+                            saveState();
+                            updateHeader();
+                            renderDaily();
+                            renderPresets();
+                            renderWorkouts();
+                            renderWeightAnalytics();
+                            showToast('הגיבוי שוחזר בהצלחה!');
+                        }
+                    } catch (err) {
+                        showToast('קובץ גיבוי לא תקין');
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        // ==================== INIT ====================
+        loadState();
+        initEvents();
+        updateHeader();
+        updateFastingTimer();
+        setInterval(updateFastingTimer, 30000);
+        renderPresets();
+        renderDaily();
+        renderWorkouts();
+        renderWeightAnalytics();
+    </script>
+</body>
+</html>
